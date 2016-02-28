@@ -1,0 +1,45 @@
+import tornado.ioloop
+import tornado.web
+import os.path
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+	self.render('index.html')
+
+class SecondHandler(tornado.web.RequestHandler):
+    def get(self):
+	self.render('world.html')
+
+settings = dict(
+	template_path=os.path.join(os.path.dirname(__file__), "templates"),
+	static_path=os.path.join(os.path.dirname(__file__), "static"),
+	debug=True
+)
+
+application = tornado.web.Application([
+    (r"/", MainHandler),
+    (r"/hello", MainHandler),
+    (r"/world", SecondHandler)
+],**settings)
+
+class Application(tornado.web.Application):
+    def __init__(self):
+        handlers = [
+            (r"/", MainHandler),
+            # Add more paths here
+            (r"/KillTornado/", StopTornado),
+            (r"/tables/", ReturnQuery),
+            (r"/tables/localhost8888", MainHandler)
+        ]
+        settings = {
+            "debug": True,
+            "template_path": os.path.join(config.base_dir, "templates"),
+            "static_path": os.path.join(config.base_dir, "static")
+        }
+        tornado.web.Application.__init__(self, handlers, **settings)
+
+if __name__ == "__main__":
+    print 'Server Running...'
+    print 'Press ctrl + c to close'
+    application.listen(4444)
+    tornado.ioloop.IOLoop.instance().start()
